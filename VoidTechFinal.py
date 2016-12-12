@@ -97,7 +97,7 @@ class player:
   # Methods
   def setCurrentRoom(this, newRoom):
     this.currentRoom = newRoom
-    this.currentRoom.printDesc()
+    this.currentRoom.printDescription()
     
   def getCurrentRoom(this):
     return this.currentRoom
@@ -125,6 +125,7 @@ TURNS = 7
 #When doing an action, remove a turn
 #Should we handle this in the main game loop?
 
+player = player()
 test = room("test")
 test.setDescription("test room")
 test_action = action("test action")
@@ -133,12 +134,16 @@ second_test_action = action("second action")
 second_test_action.setCallback(testCallBack)
 test.addAction(test_action)
 test.addAction(second_test_action)
+player.setCurrentRoom(test)
 #test.printActions()
 test.takeAction(1)
 
 while true:
   playerInput = requestString(test.buildActions())
+  if playerInput.upper() == "HELP":
+    print("TODO")
+  else:
+    player.getCurrentRoom().takeAction(int(playerInput))
 
-#player = player()
 #player.damage(20)
 #player.removeSanity(20)
