@@ -198,6 +198,7 @@ class player:
 ###### Game variables ######
 turns = 7
 player = player()
+end = False
 #TODO Add "fake" room and add actions for different traits
 #Traits will effect later game
 
@@ -343,18 +344,21 @@ topHillRoom.addAction(topHillChurchAction)
 
 def grabWoodenStakeCallBack():
   player.getInventory().addItem(WOODEN_STAKE)
-  TURNS = 100
+  global turns
+  turns = 100
   player.setCurrentRoom(churchRoomDracula)
   
 
 def grabSilverSickleCallBack():
   player.getInventory().addItem(SILVER_SICKLE)
-  TURNS = 100
+  global turns
+  turns = 100
   player.setCurrentRoom(churchRoomDracula)
 
 def grabHolyWaterCallBack():
   player.getInventory().addItem(HOLY_WATER) 
-  TURNS = 100
+  global turns
+  turns = 100
   player.setCurrentRoom(churchRoomDracula)
   
   
@@ -372,8 +376,20 @@ churchRoom.addAction(silverSickleAction)
 churchRoom.addAction(holyWaterAction)
 
 #Church room dracula
-def fightDraculeCallback():
-  print("fight")
+def fightDraculaCallback():
+  showInformation("Dracula flies toward you")
+  if(player.getInventory().hasItem(WOODEN_STAKE)):
+    global end
+    end = True
+    showInformation("You stab Dracula with the stake, he withers away and you are free!")
+  else:
+    showInformation("You have nothing to defend yourself with, Dracula bites you...")
+    global turns
+    turns = 0
+
+fightAction = action("Fight Dracula")
+fightAction.setCallback(fightDraculaCallback)
+churchRoomDracula.addAction(fightAction)
 
 #BEFORE GAME
 #NAME = requestString("Before the game starts, we like to get to know a little about the person who is playing. So lets start off with your name")
@@ -382,21 +398,27 @@ def fightDraculeCallback():
 def showHelp():
   printInformation("If at any time you want to stop you can press the STOP button. Input numbers for the given actions. Remember your time, health and well being are all limited! Remember to make use of the rest option!")
 
-while true:
+while True:
+  if(end):
+    showInformation("Congratulations you win, play again to find all the secrets!")
+    break
+  
   if(turns <= 0):
     showInformation("I am sorry but you have lost the game, better luck next time!")
     break
+    
+  if(player.getSanity() <= 0):
+    break
+  
   playerInput = requestString(player.getCurrentRoom().buildActions())
   if playerInput.upper() == "HELP":
     showHelp()
   else:
     val = player.getCurrentRoom().takeAction(playerInput)
     if(player.getSanity() <= 0):
-      continue
-    elif(val == 1):
+      break
+    if(val == 1):
       turns -= 1
       player.removeSanity(SANITY_PER_TURN)
     else:
       continue
-#player.damage(20)
-#player.removeSanity(20)
