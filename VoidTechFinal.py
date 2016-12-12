@@ -1,4 +1,3 @@
-#Globals
 TURNS = 7
 
 class inventory:
@@ -71,11 +70,10 @@ class room:
     number = number - 1
     for i in range(0, len(this.actions)):
       if i == number:
-        TURNS -= 1 #Deprecate turns by one for every turn take
         this.actions[i].callback()
-        return
+        return 1
     showInformation("I don't understand, please make sure you are using a valid number!")
-
+    return 0
   #def printActions(this):
   #  for i in range(0, len(this.actions)):
   #    number = this.actions[i].getNumber()
@@ -150,7 +148,10 @@ while true:
   if playerInput.upper() == "HELP":
     print("TODO")
   else:
-    player.getCurrentRoom().takeAction(int(playerInput))
-
+    val = player.getCurrentRoom().takeAction(int(playerInput))
+    if(val == 1):
+      TURNS -= 1
+    else:
+      continue
 #player.damage(20)
 #player.removeSanity(20)
