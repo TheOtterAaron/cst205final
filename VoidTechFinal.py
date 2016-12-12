@@ -1,7 +1,8 @@
 import pickle
 
-TURNS = 7
-#NAME = requestString("Can you please tell me your name?")
+#Constants
+MAX_HEALTH = 20
+MAX_SANITY = 20
 
 class frame:
   def __init__(this):
@@ -83,6 +84,7 @@ class room:
     this.description = ""
     this.inventory = inventory()
     this.actions = list()
+    this.data = 0
   
   # Methods
   def setDescription(this, description):
@@ -98,20 +100,28 @@ class room:
     this.actions.remove(action)  
   
   def takeAction(this, number):
-    number = number - 1
-    for i in range(0, len(this.actions)):
-      if i == number:
-        this.actions[i].callback()
-        return 1
+    if(number.isnumeric()):
+      number = int(number)
+      number = number - 1
+      for i in range(0, len(this.actions)):
+        if i == number:
+          this.actions[i].callback()
+          return 1
     showInformation("I don't understand, please make sure you are using a valid number!")
     return 0
+    
+  def getData(this):
+    return this.data
+  
+  def addData(this):
+    this.data = this.data + 1
   #def printActions(this):
   #  for i in range(0, len(this.actions)):
   #    number = this.actions[i].getNumber()
   #    description = this.actions[i].getDescription()
   #    printNow("%s. %s"  % (number,description))  
   def buildActions(this):
-    built = "======= " + this.name + " =======" + "\n" + this.description + "\n" + "What do you want to do?" + "\n"
+    built = this.name + "\n" + this.description + "\n" + "What do you want to do?" + "\n"
     for i in range(0, len(this.actions)):
       number = i + 1
       description = this.actions[i].getDescription()
@@ -124,8 +134,8 @@ class player:
   def __init__(this):
     this.currentRoom = 0
     this.inventory = inventory()
-    this.health = 20
-    this.sanity = 20
+    this.health = MAX_HEALTH
+    this.sanity = MAX_SANITY
   
   # Methods
   def setCurrentRoom(this, newRoom):
@@ -138,6 +148,12 @@ class player:
   def getInventory(this):
     return this.inventory
     
+  def addHealth(this, healthToAdd):
+    this.health += healthToAdd
+  
+  def getHealth(this):
+    return this.health
+  
   def damage(this, amount):
     this.health -= amount
     if(this.health <= 0):
@@ -150,24 +166,107 @@ class player:
       printNow("I'm sorry but it seems that you have lost your mind")
       TURNS = 0
       #Do sanity condition
-  
-######
-def testCallBack():
-  printNow("test callback")
-
-#When doing an action, remove a turn
-#Should we handle this in the main game loop?
-
+###### Game variables ######
+turns = 7
 player = player()
+#NAME = requestString("Can you please tell me your name?")
+
+###### Rooms ######
 outsideCastleRoom = room("Dracula's Castle")
 outsideCastleRoom.setDescription("You are outside Dracula's castle in Transylvania")
+
+townRoom = room("Old town")
+townRoom.setDescription("You are in an old semi-abandoned town you see the remanents of buildings. There are very few people on the street, everyone is heading indoors.")
+
+forestRoom = room("Forest")
+forestRoom.setDescription("You are in a heavily dense forest, you feel like something could attack you at any moment. Oddly enough this forest has a trail.\nThere is a fork in the road.")
+
+bottomHillRoom = room("Hill Bottom")
+bottomHillRoom.setDescription("You are now at the bottom of the hill, on top of the hill you can see an old church!")
+
+topHillRoom = room("Hill Top")
+topHillRoom.setDescription("You are at the top of the hill, the doors to the nearby church are swung open.")
+
+
+#Add player to first room
+player.setCurrentRoom(outsideCastleRoom)
+
+#Add actions for outside castle
+def moatCallBack():
+  player.damage(10)
+  showInformation("As you jump into the moat the current takes you away, you end up in an old town. You seem to be pretty beaten up.")
+  player.setCurrentRoom(townRoom)
+
+def forestCallBack():
+  showInformation("You gallop into the forest, as you traverse deeper something seems off.")
+  player.setCurrentRoom(forestRoom)
+
+
 moatAction = action("Jump into the moat")
-moatAction.setCallback(testCallBack)
+moatAction.setCallback(moatCallBack)
 forestAction = action("Go into forest")
-forestAction.setCallback(testCallBack)
+forestAction.setCallback(forestCallBack)
 outsideCastleRoom.addAction(moatAction)
 outsideCastleRoom.addAction(forestAction)
-player.setCurrentRoom(outsideCastleRoom)
+
+#Add forest actions
+def forkLeftCallBack():
+  if(player.getCurrentRoom().getData() == 0):
+    showInformation("As you go around the fork in the road you notice you are back in the same spot. This is a bit odd....")
+    showInformation("You realize that your cognitive skills have taken a hit, you aren't sure what you are doing anymore")
+    player.removeSanity(10)
+    player.getCurrentRoom().addData()
+    player.setCurrentRoom(forestRoom)
+  elif(player.getCurrentRoom().getData() == 1):
+    showInformation("You are now on the top of a hill, from here you can see the town.")
+    player.setCurrentRoom(topHillRoom)
+
+def forkRightCallBack():
+  player.setCurrentRoom(townRoom)
+
+leftForkAction = action("Go left")
+leftForkAction.setCallback(forkLeftCallBack)
+rightForkAction = action("Go right")
+rightForkAction.setCallback(forkRightCallBack)
+forestRoom.addAction(leftForkAction)
+forestRoom.addAction(rightForkAction)
+
+#Add town actions
+bandageAction = action("Find someone who can fix me up")
+bottomHillAction = action("Go to the bottom of the hill")
+
+def bandageCallBack():
+  if(player.getHealth() < MAX_HEALTH):
+    showInformation("You approach a person who seems to run an apothecary. They see how banged up you are and bandage you up. You feel slightly better. The person who bandaged you up walks inside and locks the door")
+    halfHealth = (MAX_HEALTH - player.getHealth()) / 2
+    player.addHealth(halfHealth)
+  else:
+    showInformation("You realize it would be pointless for you to get bandaged as you aren't even hurt!")
+
+  player.getCurrentRoom().removeAction(bandageAction)
+
+def bottomHillCallBack():
+  showInformation("You slothfully travel through the town, you start going up a slight incline.")
+  player.setCurrentRoom(bottomHillRoom)
+  
+
+
+bandageAction.setCallback(bandageCallBack)
+bottomHillAction.setCallback(bottomHillCallBack)
+
+townRoom.addAction(bandageAction)
+townRoom.addAction(bottomHillAction)
+
+#Bottom hill actions
+def bottomToTopHillCallBack():
+  showInformation("You begrudgingly make your way up the hill")
+  player.removeSanity(10)
+  showInformation("You are starting to lose the will to live, you start thinking that you should have just let Dracula take you.")
+  player.setCurrentRoom(topHillRoom)
+
+topHillAction = action("Trek up the hill")
+topHillAction.setCallback(bottomToTopHillCallBack)
+bottomHillRoom.addAction(topHillAction)
 
 while true:
   if(TURNS == 0):
@@ -177,9 +276,10 @@ while true:
   if playerInput.upper() == "HELP":
     print("TODO")
   else:
-    val = player.getCurrentRoom().takeAction(int(playerInput))
+    val = player.getCurrentRoom().takeAction(playerInput)
     if(val == 1):
-      TURNS -= 1
+      turns -= 1
+      player.removeSanity(1)
     else:
       continue
 #player.damage(20)
