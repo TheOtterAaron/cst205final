@@ -26,15 +26,11 @@ class inventory:
 class action:
   
   # Members
-  def __init__(this, number, description):
-    this.number = number
+  def __init__(this, description):
     this.description = description
     this.callback = 0
   
   # Methods
-  def getNumber(this):
-    return this.number
-    
   def getDescription(this):
     return this.description
   
@@ -69,11 +65,12 @@ class room:
     this.actions.remove(action)  
   
   def takeAction(this, number):
+    number = number - 1
     for i in range(0, len(this.actions)):
-      if this.actions[i].getNumber() == number:
+      if i == number:
         this.actions[i].callback()
         return
-    printNow("I don't understand, please make sure you are using a number!")
+    showInformation("I don't understand, please make sure you are using a valid number!")
 
   #def printActions(this):
   #  for i in range(0, len(this.actions)):
@@ -83,7 +80,7 @@ class room:
   def buildActions(this):
     built = ""
     for i in range(0, len(this.actions)):
-      number = this.actions[i].getNumber()
+      number = i + 1
       description = this.actions[i].getDescription()
       built += "%s. %s \n" %(number, description)
     return built
@@ -130,14 +127,14 @@ TURNS = 7
 
 test = room("test")
 test.setDescription("test room")
-test_action = action(1, "test action")
+test_action = action("test action")
 test_action.setCallback(testCallBack)
-second_test_action = action(2, "second action")
+second_test_action = action("second action")
 second_test_action.setCallback(testCallBack)
 test.addAction(test_action)
 test.addAction(second_test_action)
 #test.printActions()
-#test.takeAction(1)
+test.takeAction(1)
 
 while true:
   playerInput = requestString(test.buildActions())
