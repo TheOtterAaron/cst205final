@@ -1,6 +1,6 @@
-# cst205final
+# Escape from Transylvania
 
-Code repo for CST 205 Final Project
+Repo for CST 205 Final Project, contains all the code and resources made for the project.
 
 
 ![graph](graph_cst205final.jpg)
