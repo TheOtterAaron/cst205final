@@ -181,13 +181,19 @@ class player:
     this.health -= amount
     if(this.health <= 0):
       showInformation("Oh dear you are dead")
-      TURNS = 0
+      global turns
+      turns = 0
       #Do death condition
+  
+  def getSanity(this):
+    return this.sanity
+  
   def removeSanity(this, sanity):
     this.sanity -= sanity
     if(this.sanity <= 0):
       showInformation("As you break down crying, you become concious and you are inside a holding cell. You hear a faint clicking noise and turn around. Dracula has bitten you...")
-      TURNS = 0
+      global turns
+      turns = 0
       #Do sanity condition
 ###### Game variables ######
 turns = 7
@@ -220,6 +226,9 @@ topHillRoom.setDescription("You are at the top of the hill, the doors to the nea
 
 churchRoom = room("Church")
 churchRoom.setDescription("The wind is blowing through the church, there is an odd chill. You approach the pulpit.")
+
+churchRoomDracula = room("Church")
+churchRoomDracula.setDescription("The doors of the church fly off, Dracula has appeared!")
 
 #Add player to first room
 player.setCurrentRoom(outsideCastleRoom)
@@ -309,9 +318,10 @@ townRoom.addAction(bottomHillAction)
 #Bottom hill actions
 def bottomToTopHillCallBack():
   showInformation("You begrudgingly make your way up the hill")
-  player.removeSanity(12)
   showInformation("You are starting to lose the will to live, you start thinking that you should have just let Dracula take you.")
-  player.setCurrentRoom(topHillRoom)
+  player.removeSanity(12)
+  if(player.getSanity() > 0):
+    player.setCurrentRoom(topHillRoom)
 
 topHillAction = action("Trek up the hill")
 topHillAction.setCallback(bottomToTopHillCallBack)
@@ -319,6 +329,7 @@ bottomHillRoom.addAction(topHillAction)
 
 #Top hill actions
 def topHillChurchCallBack():
+  #If time of day is > 3, set to night time
   showInformation("You enter the old musty church, it seems to have been used just recently.")
   player.setCurrentRoom(churchRoom)
 
@@ -330,27 +341,39 @@ topHillRoom.addAction(topHillChurchAction)
 # -> Make dracula appear after next action
 #Depending on choice made in the church is whether or not the player survives
 
-def grabWoodenStake():
+def grabWoodenStakeCallBack():
   player.getInventory().addItem(WOODEN_STAKE)
   TURNS = 100
-  #Set to new room
-def grabSilverSickle():
+  player.setCurrentRoom(churchRoomDracula)
+  
+
+def grabSilverSickleCallBack():
   player.getInventory().addItem(SILVER_SICKLE)
   TURNS = 100
-  #Set to new room
-def grabHolyWater():
+  player.setCurrentRoom(churchRoomDracula)
+
+def grabHolyWaterCallBack():
   player.getInventory().addItem(HOLY_WATER) 
   TURNS = 100
-  #Set to new room
+  player.setCurrentRoom(churchRoomDracula)
+  
   
 woodenStakeAction = action("Grab wooden stake")
-woodenStakeAction.setCallback(grabWoodenStake)
+woodenStakeAction.setCallback(grabWoodenStakeCallBack)
 
 silverSickleAction = action("Grab silver sickle")
-silverSickleAction.setCallback(grabSilverSickle)
+silverSickleAction.setCallback(grabSilverSickleCallBack)
 
 holyWaterAction = action("Grab holy water")
-holyWaterAction.setCallback(grabHolyWater)
+holyWaterAction.setCallback(grabHolyWaterCallBack)
+
+churchRoom.addAction(woodenStakeAction)
+churchRoom.addAction(silverSickleAction)
+churchRoom.addAction(holyWaterAction)
+
+#Church room dracula
+def fightDraculeCallback():
+  print("fight")
 
 #BEFORE GAME
 #NAME = requestString("Before the game starts, we like to get to know a little about the person who is playing. So lets start off with your name")
@@ -360,7 +383,7 @@ def showHelp():
   printInformation("If at any time you want to stop you can press the STOP button. Input numbers for the given actions. Remember your time, health and well being are all limited! Remember to make use of the rest option!")
 
 while true:
-  if(TURNS == 0):
+  if(turns <= 0):
     showInformation("I am sorry but you have lost the game, better luck next time!")
     break
   playerInput = requestString(player.getCurrentRoom().buildActions())
@@ -368,7 +391,9 @@ while true:
     showHelp()
   else:
     val = player.getCurrentRoom().takeAction(playerInput)
-    if(val == 1):
+    if(player.getSanity() <= 0):
+      continue
+    elif(val == 1):
       turns -= 1
       player.removeSanity(SANITY_PER_TURN)
     else:
