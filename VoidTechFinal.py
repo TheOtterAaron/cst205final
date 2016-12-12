@@ -3,6 +3,7 @@ import pickle
 #Constants
 MAX_HEALTH = 20
 MAX_SANITY = 20
+TRAIT = ""
 
 class frame:
   def __init__(this):
@@ -169,9 +170,14 @@ class player:
 ###### Game variables ######
 turns = 7
 player = player()
-#NAME = requestString("Can you please tell me your name?")
+#TODO Add "fake" room and add actions for different traits
+#Traits will effect later game
 
 ###### Rooms ######
+
+fakeRoom = room("")
+fakeRoom.setDescription("There is a murder in your small town of 100 people/")
+
 outsideCastleRoom = room("Dracula's Castle")
 outsideCastleRoom.setDescription("You are outside Dracula's castle in Transylvania")
 
@@ -188,8 +194,26 @@ topHillRoom = room("Hill Top")
 topHillRoom.setDescription("You are at the top of the hill, the doors to the nearby church are swung open.")
 
 
+
 #Add player to first room
 player.setCurrentRoom(outsideCastleRoom)
+#player.setCurrentRoom(fakeRoom)
+#Set player to fake room instead
+#Add actions for fake room
+def braveCallBack():
+  TRAIT = "BRAVE"
+  player.setCurrentRoom(outsideCastleRoom)
+
+def observantCallBack():
+  TRAIT = "OBSERVANT"
+  player.setCurrentRoom(outsideCastleRoom)
+
+trackDownAction = action("I would try to track down the killer and report them to the police!")
+trackDownAction.setCallback(braveCallBack)
+observantAction = action("I would help the police gather information, only a fool would to to find a killer!")
+observantAction.setCallback(observantCallBack)
+fakeRoom.addAction(trackDownAction)
+fakeRoom.addAction(observantAction)
 
 #Add actions for outside castle
 def moatCallBack():
@@ -267,6 +291,12 @@ def bottomToTopHillCallBack():
 topHillAction = action("Trek up the hill")
 topHillAction.setCallback(bottomToTopHillCallBack)
 bottomHillRoom.addAction(topHillAction)
+
+#Top hill actions
+
+#BEFORE GAME
+#NAME = requestString("Before the game starts, we like to get to know a little about the person who is playing. So lets start off with your name")
+#showInformation("This next question is a hypothetical and is not part of the game. Any time during the game if you need help just type HELP in the dialog box to be reminded of how to play the game. Best of luck with Escaping from Transylvania!")
 
 while true:
   if(TURNS == 0):
