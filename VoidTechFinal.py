@@ -1,7 +1,7 @@
 import pickle
 
 TURNS = 7
-NAME = requestString("Can you please tell me your name?")
+#NAME = requestString("Can you please tell me your name?")
 
 class frame:
   def __init__(this):
@@ -88,10 +88,6 @@ class room:
   def setDescription(this, description):
     this.description = description
     
-  def printDescription(this):
-    printNow("======= " + this.name + " =======")
-    printNow(this.description)
-    
   def getInventory(this):
     return this.inventory
     
@@ -115,7 +111,7 @@ class room:
   #    description = this.actions[i].getDescription()
   #    printNow("%s. %s"  % (number,description))  
   def buildActions(this):
-    built = ""
+    built = "======= " + this.name + " =======" + "\n" + this.description + "\n" + "What do you want to do?" + "\n"
     for i in range(0, len(this.actions)):
       number = i + 1
       description = this.actions[i].getDescription()
@@ -134,7 +130,7 @@ class player:
   # Methods
   def setCurrentRoom(this, newRoom):
     this.currentRoom = newRoom
-    this.currentRoom.printDescription()
+    #this.currentRoom.showDescription()
     
   def getCurrentRoom(this):
     return this.currentRoom
@@ -163,23 +159,21 @@ def testCallBack():
 #Should we handle this in the main game loop?
 
 player = player()
-test = room("test")
-test.setDescription("test room")
-test_action = action("test action")
-test_action.setCallback(testCallBack)
-second_test_action = action("second action")
-second_test_action.setCallback(testCallBack)
-test.addAction(test_action)
-test.addAction(second_test_action)
-player.setCurrentRoom(test)
-#test.printActions()
-test.takeAction(1)
+outsideCastleRoom = room("Dracula's Castle")
+outsideCastleRoom.setDescription("You are outside Dracula's castle in Transylvania")
+moatAction = action("Jump into the moat")
+moatAction.setCallback(testCallBack)
+forestAction = action("Go into forest")
+forestAction.setCallback(testCallBack)
+outsideCastleRoom.addAction(moatAction)
+outsideCastleRoom.addAction(forestAction)
+player.setCurrentRoom(outsideCastleRoom)
 
 while true:
   if(TURNS == 0):
     showInformation("I am sorry but you have lost the game, better luck next time!")
     break
-  playerInput = requestString(test.buildActions())
+  playerInput = requestString(player.getCurrentRoom().buildActions())
   if playerInput.upper() == "HELP":
     print("TODO")
   else:
