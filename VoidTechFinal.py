@@ -1,4 +1,34 @@
+import pickle
+
 TURNS = 7
+
+class frame:
+  def __init__(this):
+    timeOfDay = 7
+    initialFrame = "" #TODO
+    mainFrame = pickle.deepcopy(initialFrame) #TODO
+    #Initial frame will be the frame to be painted
+    #Will paint the frame with everything minus the stats
+    #Stats to be painted later
+    #Frame to be painted to is the mainFrame
+    #MainFrame will always deepcopy the initial frame to copy over the data
+    
+    
+  def paintStats(this): #Should be called whenever sanity or health gets updated
+    print("Repainting stats!")
+    mainFrame = pickle.deepcopy(initialFrame)
+    #Paint stats TODO
+    return mainFrame
+  
+  def paintTimeOfDay(this):
+    print("Painting the time of day!")
+    if(timeOfDay == 7):
+      print("TODO")
+      #Paint a certain color
+    
+    this.timeOfDay = this.timeOfDay - 1 #When a day passes
+    
+  #When changes are done repaint in main game loop
 
 class inventory:
 
