@@ -6,18 +6,27 @@ MAX_SANITY = 20
 SANITY_PER_REST = 3
 SANITY_PER_TURN = 1
 TRAIT = ""
+WOODEN_STAKE = "WOODEN STAKE"
+SILVER_SICKLE = "SILVER SICKLE"
+HOLY_WATER = "HOLY WATER"
 
 class frame:
-  def __init__(this):
+  def __init__(this): #Get resources in file path to create initial frame
     timeOfDay = 7
     initialFrame = "" #TODO
-    mainFrame = pickle.deepcopy(initialFrame) #TODO
+    mainFrame = ""
     #Initial frame will be the frame to be painted
     #Will paint the frame with everything minus the stats
     #Stats to be painted later
     #Frame to be painted to is the mainFrame
     #MainFrame will always deepcopy the initial frame to copy over the data
     #Possibly cache "new" frames for different times of day for speed effeciency, however loadtime will be rough
+  
+  def paintPortait(this, frame):
+    print("Painting portrait")
+    #Replace the pink/purple pixels in the frame in a certain area with the picture given
+    return frame
+  
   
   def getMainFrame(this, frame): #Returns a deepcopy of initial frame
     return pickle.deepcopy(initialFrame)
@@ -30,12 +39,23 @@ class frame:
   
   def timeOfDay(this, frame):
     print("Painting the time of day!")
-    if(timeOfDay == 7):
-      print("TODO")
+    if(timeOfDay == 5):
+      print("Sun down") 
       #Paint a certain color over a subsection of the frame
-    
-    this.timeOfDay = this.timeOfDay - 1 #When a day passes
+      #Check if intial frame color is pink and if so paint on new frame
+    elif(timeOfDay == 4): 
+      print("Passing the horizon")
+    elif(timeOfDay <= 3):
+      print("Night")
+      showInformation("The sun has gone down, Dracula is on his way!")
+    this.timeOfDay = this.timeOfDay - 1 #When turn passes
     return frame
+  
+  def removeTimeOfDay(this):
+    this.timeOfDay = this.timeOfDay - 1
+   
+  def getTimeOfDay(this):
+    return this.timeOfDay
     
   #When changes are done repaint in main game loop
 
@@ -160,13 +180,13 @@ class player:
   def damage(this, amount):
     this.health -= amount
     if(this.health <= 0):
-      printNow("Oh dear you are dead!")
+      showInformation("Oh dear you are dead")
       TURNS = 0
       #Do death condition
   def removeSanity(this, sanity):
     this.sanity -= sanity
     if(this.sanity <= 0):
-      printNow("I'm sorry but it seems that you have lost your mind")
+      showInformation("As you break down crying, you become concious and you are inside a holding cell. You hear a faint clicking noise and turn around. Dracula has bitten you...")
       TURNS = 0
       #Do sanity condition
 ###### Game variables ######
@@ -278,7 +298,6 @@ def bandageCallBack():
 def bottomHillCallBack():
   showInformation("You slothfully travel through the town, you start going up a slight incline.")
   player.setCurrentRoom(bottomHillRoom)
-  
 
 
 bandageAction.setCallback(bandageCallBack)
@@ -310,6 +329,28 @@ topHillRoom.addAction(topHillChurchAction)
 #Church actions
 # -> Make dracula appear after next action
 #Depending on choice made in the church is whether or not the player survives
+
+def grabWoodenStake():
+  player.getInventory().addItem(WOODEN_STAKE)
+  TURNS = 100
+  #Set to new room
+def grabSilverSickle():
+  player.getInventory().addItem(SILVER_SICKLE)
+  TURNS = 100
+  #Set to new room
+def grabHolyWater():
+  player.getInventory().addItem(HOLY_WATER) 
+  TURNS = 100
+  #Set to new room
+  
+woodenStakeAction = action("Grab wooden stake")
+woodenStakeAction.setCallback(grabWoodenStake)
+
+silverSickleAction = action("Grab silver sickle")
+silverSickleAction.setCallback(grabSilverSickle)
+
+holyWaterAction = action("Grab holy water")
+holyWaterAction.setCallback(grabHolyWater)
 
 #BEFORE GAME
 #NAME = requestString("Before the game starts, we like to get to know a little about the person who is playing. So lets start off with your name")
