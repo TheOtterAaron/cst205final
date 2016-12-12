@@ -1,3 +1,6 @@
+#Globals
+TURNS = 7
+
 class inventory:
 
   # Members
@@ -68,6 +71,7 @@ class room:
     number = number - 1
     for i in range(0, len(this.actions)):
       if i == number:
+        TURNS -= 1 #Deprecate turns by one for every turn take
         this.actions[i].callback()
         return
     showInformation("I don't understand, please make sure you are using a valid number!")
@@ -109,18 +113,18 @@ class player:
     this.health -= amount
     if(this.health <= 0):
       printNow("Oh dear you are dead!")
+      TURNS = 0
       #Do death condition
   def removeSanity(this, sanity):
     this.sanity -= sanity
     if(this.sanity <= 0):
       printNow("I'm sorry but it seems that you have lost your mind")
+      TURNS = 0
       #Do sanity condition
   
 ######
 def testCallBack():
   printNow("test callback")
-
-TURNS = 7
 
 #When doing an action, remove a turn
 #Should we handle this in the main game loop?
@@ -139,6 +143,9 @@ player.setCurrentRoom(test)
 test.takeAction(1)
 
 while true:
+  if(TURNS == 0):
+    showInformation("I am sorry but you have lost the game, better luck next time!")
+    break
   playerInput = requestString(test.buildActions())
   if playerInput.upper() == "HELP":
     print("TODO")
