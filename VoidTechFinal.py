@@ -3,6 +3,8 @@ import pickle
 #Constants
 MAX_HEALTH = 20
 MAX_SANITY = 20
+SANITY_PER_REST = 3
+SANITY_PER_TURN = 1
 TRAIT = ""
 
 class frame:
@@ -173,10 +175,13 @@ player = player()
 #TODO Add "fake" room and add actions for different traits
 #Traits will effect later game
 
+###### Global Actions ######
+#Actions to be added to all rooms besides the fake room
+
 ###### Rooms ######
 
 fakeRoom = room("")
-fakeRoom.setDescription("There is a murder in your small town of 100 people/")
+fakeRoom.setDescription("There is a murder in your small town of 100 people.")
 
 outsideCastleRoom = room("Dracula's Castle")
 outsideCastleRoom.setDescription("You are outside Dracula's castle in Transylvania")
@@ -193,7 +198,8 @@ bottomHillRoom.setDescription("You are now at the bottom of the hill, on top of 
 topHillRoom = room("Hill Top")
 topHillRoom.setDescription("You are at the top of the hill, the doors to the nearby church are swung open.")
 
-
+churchRoom = room("Church")
+churchRoom.setDescription("The wind is blowing through the church, there is an odd chill. You approach the pulpit.")
 
 #Add player to first room
 player.setCurrentRoom(outsideCastleRoom)
@@ -208,7 +214,7 @@ def observantCallBack():
   TRAIT = "OBSERVANT"
   player.setCurrentRoom(outsideCastleRoom)
 
-trackDownAction = action("I would try to track down the killer and report them to the police!")
+trackDownAction = action("I would track down the killer and report them to the police!")
 trackDownAction.setCallback(braveCallBack)
 observantAction = action("I would help the police gather information, only a fool would to to find a killer!")
 observantAction.setCallback(observantCallBack)
@@ -284,7 +290,7 @@ townRoom.addAction(bottomHillAction)
 #Bottom hill actions
 def bottomToTopHillCallBack():
   showInformation("You begrudgingly make your way up the hill")
-  player.removeSanity(10)
+  player.removeSanity(12)
   showInformation("You are starting to lose the will to live, you start thinking that you should have just let Dracula take you.")
   player.setCurrentRoom(topHillRoom)
 
@@ -293,10 +299,24 @@ topHillAction.setCallback(bottomToTopHillCallBack)
 bottomHillRoom.addAction(topHillAction)
 
 #Top hill actions
+def topHillChurchCallBack():
+  showInformation("You enter the old musty church, it seems to have been used just recently.")
+  player.setCurrentRoom(churchRoom)
+
+topHillChurchAction = action("Enter the church")
+topHillChurchAction.setCallback(topHillChurchCallBack)
+topHillRoom.addAction(topHillChurchAction)
+
+#Church actions
+# -> Make dracula appear after next action
+#Depending on choice made in the church is whether or not the player survives
 
 #BEFORE GAME
 #NAME = requestString("Before the game starts, we like to get to know a little about the person who is playing. So lets start off with your name")
 #showInformation("This next question is a hypothetical and is not part of the game. Any time during the game if you need help just type HELP in the dialog box to be reminded of how to play the game. Best of luck with Escaping from Transylvania!")
+
+def showHelp():
+  printInformation("If at any time you want to stop you can press the STOP button. Input numbers for the given actions. Remember your time, health and well being are all limited! Remember to make use of the rest option!")
 
 while true:
   if(TURNS == 0):
@@ -304,12 +324,12 @@ while true:
     break
   playerInput = requestString(player.getCurrentRoom().buildActions())
   if playerInput.upper() == "HELP":
-    print("TODO")
+    showHelp()
   else:
     val = player.getCurrentRoom().takeAction(playerInput)
     if(val == 1):
       turns -= 1
-      player.removeSanity(1)
+      player.removeSanity(SANITY_PER_TURN)
     else:
       continue
 #player.damage(20)
