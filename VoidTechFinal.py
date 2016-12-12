@@ -75,12 +75,18 @@ class room:
         return
     printNow("I don't understand, please make sure you are using a number!")
 
-  def printActions(this):
+  #def printActions(this):
+  #  for i in range(0, len(this.actions)):
+  #    number = this.actions[i].getNumber()
+  #    description = this.actions[i].getDescription()
+  #    printNow("%s. %s"  % (number,description))  
+  def buildActions(this):
+    built = ""
     for i in range(0, len(this.actions)):
       number = this.actions[i].getNumber()
       description = this.actions[i].getDescription()
-      printNow("%s. %s"  % (number,description))  
-   
+      built += "%s. %s \n" %(number, description)
+    return built
 # === PLAYER ===
 class player:
   
@@ -118,6 +124,7 @@ def testCallBack():
   printNow("test callback")
 
 TURNS = 7
+
 #When doing an action, remove a turn
 #Should we handle this in the main game loop?
 
@@ -125,10 +132,16 @@ test = room("test")
 test.setDescription("test room")
 test_action = action(1, "test action")
 test_action.setCallback(testCallBack)
+second_test_action = action(2, "second action")
+second_test_action.setCallback(testCallBack)
 test.addAction(test_action)
-test.printActions()
-test.takeAction(1)
+test.addAction(second_test_action)
+#test.printActions()
+#test.takeAction(1)
 
-player = player()
-player.damage(20)
-player.removeSanity(20)
+while true:
+  playerInput = requestString(test.buildActions())
+
+#player = player()
+#player.damage(20)
+#player.removeSanity(20)
