@@ -21,7 +21,7 @@ class frame:
     this.mainFrame = ""
     this.night = False
     #Paint avatar
-    showInformation("Please select your game avatar, pictures have to be a minimum of 50 * 50. The smaller picture, the best the result!")
+    showInformation("Please select your game avatar, pictures have to be a minimum of 50 * 50. The smaller picture, the better the result!")
     this.avatarPicture = makePicture(pickAFile())
     
     this.avatarHeight = getHeight(this.avatarPicture)
@@ -477,7 +477,7 @@ churchRoom.addAction(rest)
 #showInformation("This next question is a hypothetical and is not part of the game. Any time during the game if you need help just type HELP in the dialog box to be reminded of how to play the game. Best of luck with Escaping from Transylvania!")
 
 def showHelp():
-  printInformation("If at any time you want to stop you can press the STOP button. Input numbers for the given actions. Remember your time, health and well being are all limited! Remember to make use of the rest option!")
+  showInformation("If at any time you want to stop you can press the STOP button. Input numbers for the given actions. Remember your time, health and well being are all limited! Remember to make use of the rest option!")
 
 while True:
   if(end):
