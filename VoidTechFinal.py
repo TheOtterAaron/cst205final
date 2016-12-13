@@ -21,7 +21,8 @@ class frame:
     this.mainFrame = ""
     this.night = False
     #Paint avatar
-    this.avatarPicture = makePicture(CURRENT_DIRECTORY + "avatar.jpg")
+    showInformation("Please select your game avatar, pictures have to be a minimum of 50 * 50. The smaller picture, the best the result!")
+    this.avatarPicture = makePicture(pickAFile())
     
     this.avatarHeight = getHeight(this.avatarPicture)
     this.avatarWidth = getWidth(this.avatarPicture)
@@ -230,7 +231,7 @@ class player:
     return this.inventory
     
   def addHealth(this, healthToAdd):
-    this.health += healthToAdd
+    this.health = this.health + healthToAdd
   
   def getHealth(this):
     return this.health
