@@ -271,10 +271,6 @@ frame = frame()
 #Actions to be added to all rooms besides the fake room
 
 ###### Rooms ######
-
-fakeRoom = room("")
-fakeRoom.setDescription("There is a murder in your small town of 100 people.")
-
 outsideCastleRoom = room("Dracula's Castle")
 outsideCastleRoom.setDescription("You are outside Dracula's castle in Transylvania")
 
@@ -295,24 +291,6 @@ churchRoom.setDescription("The wind is blowing through the church, there is an o
 
 churchRoomDracula = room("Church")
 churchRoomDracula.setDescription("The doors of the church fly off, Dracula has appeared!")
-
-#player.setCurrentRoom(fakeRoom)
-#Set player to fake room instead
-#Add actions for fake room
-def braveCallBack():
-  TRAIT = "BRAVE"
-  player.setCurrentRoom(outsideCastleRoom)
-
-def observantCallBack():
-  TRAIT = "OBSERVANT"
-  player.setCurrentRoom(outsideCastleRoom)
-
-trackDownAction = action("I would track down the killer and report them to the police!")
-trackDownAction.setCallback(braveCallBack)
-observantAction = action("I would help the police gather information, only a fool would to to find a killer!")
-observantAction.setCallback(observantCallBack)
-fakeRoom.addAction(trackDownAction)
-fakeRoom.addAction(observantAction)
 
 #Add actions for outside castle
 def moatCallBack():
