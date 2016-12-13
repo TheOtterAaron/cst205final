@@ -16,26 +16,36 @@ REPLACE_COLOR = makeColor(236,0,133)
 class frame:
   def __init__(this): #Get resources in file path to create initial frame
     this.timeOfDay = 8
-    
+    this.skyColor = makeColor(255,255,255)
     this.initialFrame = makePicture(FRAME_FILE) #TODO
-    avatarPicture = makePicture(CURRENT_DIRECTORY + "avatar.jpg")
+    this.mainFrame = ""
+    this.avatarPicture = makePicture(CURRENT_DIRECTORY + "avatar.jpg")
     
-    avatarHeight = getHeight(avatarPicture)
-    avatarWidth = getWidth(avatarPicture)
+    this.avatarHeight = getHeight(this.avatarPicture)
+    this.avatarWidth = getWidth(this.avatarPicture)
     
-    divideHeight = avatarHeight/50
-    divideWidth = avatarWidth/50
-    divideAverage = (divideHeight + divideWidth) / 2
- 
+    this.divideHeight = this.avatarHeight/50
+    this.divideWidth = this.avatarWidth/50
     
-    newAvatarPicture = makeEmptyPicture(50,50)
-    skip = 0
+    this.newAvatarPicture = makeEmptyPicture(50,50)
     for x in range(0, 50):
       for y in range(0,50):
-        o = getPixel(avatarPicture, x * divideAverage, y * divideAverage)
-        setColor(getPixel(newAvatarPicture,x,y), getColor(o))
+        o = getPixel(this.avatarPicture, x * this.divideWidth, y * this.divideHeight)
+        setColor(getPixel(this.newAvatarPicture,x,y), getColor(o))
     
-    show(newAvatarPicture)
+    this.placeStartWidth = 16
+    this.placeEndWidth = 66
+    this.placeStartHeight = 224
+    this.placeEndHeight = 274
+    
+    
+    for x in range(16, 66):
+      for y in range(224, 274):
+        o = getPixel(this.initialFrame, x, y)
+        if(distance(REPLACE_COLOR, getColor(o)) < 10):
+          setColor(o, getColor(getPixel(this.newAvatarPicture, x - 16, y - 224)))
+        
+    writePictureTo(this.initialFrame, CURRENT_DIRECTORY + "frame_initial.png")
     show(this.initialFrame)
     
     
@@ -53,8 +63,8 @@ class frame:
     return frame
   
   
-  def getMainFrame(this, frame): #Returns a deepcopy of initial frame
-    return pickle.deepcopy(this.initialFrame)
+  def repaintMainFrame(this, frame): #Returns a deepcopy of initial frame
+    
     
   def paintStats(this, frame): #Should be called whenever sanity or health gets updated
     print("Repainting stats!")
