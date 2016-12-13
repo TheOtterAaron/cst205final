@@ -11,7 +11,7 @@ HOLY_WATER = "HOLY WATER"
 
 class frame:
   def __init__(this): #Get resources in file path to create initial frame
-    this.timeOfDay = 7
+    this.timeOfDay = 8
     this.initialFrame = "" #TODO
     this.mainFrame = ""
     #Initial frame will be the frame to be painted
@@ -38,11 +38,11 @@ class frame:
   
   def timeOfDay(this, frame):
     print("Painting the time of day!")
-    if(timeOfDay == 5):
+    if(timeOfDay == 7):
       print("Sun down") 
       #Paint a certain color over a subsection of the frame
       #Check if intial frame color is pink and if so paint on new frame
-    elif(timeOfDay == 4): 
+    elif(timeOfDay == 5): 
       print("Passing the horizon")
     elif(timeOfDay <= 3):
       print("Night")
@@ -282,6 +282,7 @@ def forkLeftCallBack():
     player.setCurrentRoom(forestRoom)
   elif(player.getCurrentRoom().getData() == 1):
     frame.removeTimeOfDay()
+    frame.removeTimeOfDay()
     showInformation("You are now on the top of a hill, from here you can see the town.")
     player.setCurrentRoom(topHillRoom)
 
@@ -440,6 +441,7 @@ while True:
       break
     if(val == 1):
       turns -= 1
+      frame.removeTimeOfDay()
       player.removeSanity(SANITY_PER_TURN)
     else:
       continue
