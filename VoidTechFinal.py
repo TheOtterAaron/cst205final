@@ -17,10 +17,10 @@ REPLACE_COLOR = makeColor(236,0,133)
 class frame:
   def __init__(this): #Get resources in file path to create initial frame
     this.timeOfDay = 8
-    this.skyColor = makeColor(255,173,60)
+    this.skyColor = makeColor(255,173,160)
     this.initialFrame = makePicture(FRAME_FILE) #TODO
     this.mainFrame = ""
-    
+    this.night = False
     #Paint avatar
     this.avatarPicture = makePicture(CURRENT_DIRECTORY + "avatar.jpg")
     
@@ -31,7 +31,7 @@ class frame:
     this.divideWidth = this.avatarWidth/50
     
     this.newAvatarPicture = makeEmptyPicture(50,50)
-    for x in range(0, 50):
+    for x in range(0,50):
       for y in range(0,50):
         o = getPixel(this.avatarPicture, x * this.divideWidth, y * this.divideHeight)
         setColor(getPixel(this.newAvatarPicture,x,y), getColor(o))
@@ -55,7 +55,7 @@ class frame:
     show(this.mainFrame)
     
     
-    this.mainFrame = ""   
+  
     #Initial frame will be the frame to be painted
     #Will paint the frame with everything minus the stats
     #Stats to be painted later
@@ -74,7 +74,7 @@ class frame:
     for x in range(0, getWidth(this.mainFrame)):
       for y in range(0, 125):
         o = getPixel(this.mainFrame, x, y)
-        if(distance(REPLACE_COLOR, getColor(o)) < 10):
+        if(distance(REPLACE_COLOR, getColor(o)) < 100):
           setColor(o, this.skyColor)
     
     repaint(this.mainFrame)
@@ -84,25 +84,23 @@ class frame:
     
    
   
-  def timeOfDay(this):
-    print("Painting the time of day!")
-    r = getRed(this.skyColor)
-    g = getGreen(this.skyColor)
-    b = getBlue(this.skyColor)
-    old_color = makeColor(r,g,b)
-    if(timeOfDay == 7):
+  def updateTimeOfDay(this):
+    print("Painting the time of day!")  
+    if(this.timeOfDay == 7):
       print("Sun down")
       this.skyColor = makeColor(227,168,87) 
-    elif(timeOfDay == 5): 
+    elif(this.timeOfDay == 5): 
       print("Passing the horizon")
       this.skyColor = makeColor(255, 213, 156)
-    elif(timeOfDay <= 3):
+    elif(this.timeOfDay <= 3 and this.night == False):
       print("Night")
+      this.night = True
       this.skyColor = makeColor(38,38,38)
       showInformation("The sun has gone down, Dracula is on his way!")
     this.timeOfDay = this.timeOfDay - 1
-    return frame
    
+  def setTimeOfDay(this, time):
+    this.timeOfDay = time
   def getTimeOfDay(this):
     return this.timeOfDay
 
@@ -329,8 +327,7 @@ def forkLeftCallBack():
     player.getCurrentRoom().addData()
     player.setCurrentRoom(forestRoom)
   elif(player.getCurrentRoom().getData() == 1):
-    frame.removeTimeOfDay()
-    frame.removeTimeOfDay()
+    frame.setTimeOfDay(3)
     showInformation("You are now on the top of a hill, from here you can see the town.")
     player.setCurrentRoom(topHillRoom)
 
@@ -490,7 +487,7 @@ while True:
     if(val == 1):
       turns -= 1
       player.removeSanity(SANITY_PER_TURN)
-      frame.timeOfDay()
+      frame.updateTimeOfDay()
       frame.repaintMainFrame()
     else:
       continue
