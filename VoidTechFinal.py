@@ -11,9 +11,9 @@ HOLY_WATER = "HOLY WATER"
 
 class frame:
   def __init__(this): #Get resources in file path to create initial frame
-    timeOfDay = 7
-    initialFrame = "" #TODO
-    mainFrame = ""
+    this.timeOfDay = 7
+    this.initialFrame = "" #TODO
+    this.mainFrame = ""
     #Initial frame will be the frame to be painted
     #Will paint the frame with everything minus the stats
     #Stats to be painted later
@@ -198,9 +198,10 @@ class player:
     this.sanity += sanity
       #Do sanity condition
 ###### Game variables ######
-turns = 7
+turns = 8
 player = player()
 end = False
+frame = frame()
 #TODO Add "fake" room and add actions for different traits
 #Traits will effect later game
 
@@ -280,6 +281,7 @@ def forkLeftCallBack():
     player.getCurrentRoom().addData()
     player.setCurrentRoom(forestRoom)
   elif(player.getCurrentRoom().getData() == 1):
+    frame.removeTimeOfDay()
     showInformation("You are now on the top of a hill, from here you can see the town.")
     player.setCurrentRoom(topHillRoom)
 
@@ -322,7 +324,7 @@ townRoom.addAction(bottomHillAction)
 def bottomToTopHillCallBack():
   showInformation("You begrudgingly make your way up the hill")
   showInformation("You are starting to lose the will to live, you start thinking that you should have just let Dracula take you.")
-  player.removeSanity(12)
+  player.removeSanity(8)
   if(player.getSanity() > 0):
     player.setCurrentRoom(topHillRoom)
 
@@ -397,7 +399,7 @@ churchRoomDracula.addAction(fightAction)
 
 #Add resting to all rooms
 def restCallBack():
-  half = (MAX_SANITY - player.getSanity()) / 2
+  half = ((MAX_SANITY - player.getSanity()) / 2) + SANITY_PER_TURN
   player.addSanity(half)
   showInformation("You feel rested")
   
