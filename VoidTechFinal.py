@@ -1,4 +1,5 @@
 import pickle
+import os
 
 #Constants
 MAX_HEALTH = 20
@@ -8,12 +9,37 @@ TRAIT = ""
 WOODEN_STAKE = "WOODEN STAKE"
 SILVER_SICKLE = "SILVER SICKLE"
 HOLY_WATER = "HOLY WATER"
+CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+FRAME_FILE = CURRENT_DIRECTORY + "frame.png"
+REPLACE_COLOR = makeColor(236,0,133)
 
 class frame:
   def __init__(this): #Get resources in file path to create initial frame
     this.timeOfDay = 8
-    this.initialFrame = "" #TODO
-    this.mainFrame = ""
+    
+    this.initialFrame = makePicture(FRAME_FILE) #TODO
+    avatarPicture = makePicture(CURRENT_DIRECTORY + "avatar.jpg")
+    
+    avatarHeight = getHeight(avatarPicture)
+    avatarWidth = getWidth(avatarPicture)
+    
+    divideHeight = avatarHeight/50
+    divideWidth = avatarWidth/50
+    divideAverage = (divideHeight + divideWidth) / 2
+ 
+    
+    newAvatarPicture = makeEmptyPicture(50,50)
+    skip = 0
+    for x in range(0, 50):
+      for y in range(0,50):
+        o = getPixel(avatarPicture, x * divideAverage, y * divideAverage)
+        setColor(getPixel(newAvatarPicture,x,y), getColor(o))
+    
+    show(newAvatarPicture)
+    show(this.initialFrame)
+    
+    
+    this.mainFrame = ""   
     #Initial frame will be the frame to be painted
     #Will paint the frame with everything minus the stats
     #Stats to be painted later
@@ -28,7 +54,7 @@ class frame:
   
   
   def getMainFrame(this, frame): #Returns a deepcopy of initial frame
-    return pickle.deepcopy(initialFrame)
+    return pickle.deepcopy(this.initialFrame)
     
   def paintStats(this, frame): #Should be called whenever sanity or health gets updated
     print("Repainting stats!")
