@@ -1,11 +1,10 @@
-import pickle
+import java.awt.Font as Font
 import os
 
 #Constants
 MAX_HEALTH = 20
 MAX_SANITY = 20
 SANITY_PER_TURN = 3
-TRAIT = ""
 WOODEN_STAKE = "WOODEN STAKE"
 SILVER_SICKLE = "SILVER SICKLE"
 HOLY_WATER = "HOLY WATER"
@@ -76,13 +75,24 @@ class frame:
         o = getPixel(this.mainFrame, x, y)
         if(distance(REPLACE_COLOR, getColor(o)) < 100):
           setColor(o, this.skyColor)
+    this.paintStats()
     
     repaint(this.mainFrame)
     
   def paintStats(this): #Should be called whenever sanity or health gets updated
+    global player
+    sanity = "Sanity: " + "%s/%s" % (player.getSanity(), MAX_SANITY)
+    health = "Health: " + "%s/%s" % (player.getHealth(), MAX_HEALTH)
+    global turns
+    turnText = "Turns: %s" % turns
+    location = "Location: " + player.getCurrentRoom().name #For some reason the getter wouldn't work
+    myFont = makeStyle("Arial", Font.BOLD, 14)
     print("Repainting stats!")
-    
-   
+    addTextWithStyle(this.mainFrame, 80, 235, sanity, myFont, white)
+    addTextWithStyle(this.mainFrame, 80, 250, health, myFont, white)
+    addTextWithStyle(this.mainFrame, 80, 265, turnText, myFont, white)
+    myFont = makeStyle("Arial", Font.BOLD, 20)
+    addTextWithStyle(this.mainFrame, 190, 250, location, myFont, white)
   
   def updateTimeOfDay(this):
     print("Painting the time of day!")  
@@ -157,7 +167,10 @@ class room:
   # Methods
   def setDescription(this, description):
     this.description = description
-    
+  
+  def getRoomName(this):
+    return this.name
+  
   def getInventory(this):
     return this.inventory
     
@@ -246,6 +259,8 @@ class player:
 ###### Game variables ######
 turns = 8
 player = player()
+#Add player to first room
+player.setCurrentRoom(outsideCastleRoom)
 end = False
 frame = frame()
 #TODO Add "fake" room and add actions for different traits
@@ -280,8 +295,6 @@ churchRoom.setDescription("The wind is blowing through the church, there is an o
 churchRoomDracula = room("Church")
 churchRoomDracula.setDescription("The doors of the church fly off, Dracula has appeared!")
 
-#Add player to first room
-player.setCurrentRoom(outsideCastleRoom)
 #player.setCurrentRoom(fakeRoom)
 #Set player to fake room instead
 #Add actions for fake room
