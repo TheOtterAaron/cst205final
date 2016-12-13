@@ -11,14 +11,17 @@ SILVER_SICKLE = "SILVER SICKLE"
 HOLY_WATER = "HOLY WATER"
 CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 FRAME_FILE = CURRENT_DIRECTORY + "frame.png"
+FRAME_INITIAL = CURRENT_DIRECTORY + "frame_initial.png"
 REPLACE_COLOR = makeColor(236,0,133)
 
 class frame:
   def __init__(this): #Get resources in file path to create initial frame
     this.timeOfDay = 8
-    this.skyColor = makeColor(255,255,255)
+    this.skyColor = makeColor(255,173,60)
     this.initialFrame = makePicture(FRAME_FILE) #TODO
     this.mainFrame = ""
+    
+    #Paint avatar
     this.avatarPicture = makePicture(CURRENT_DIRECTORY + "avatar.jpg")
     
     this.avatarHeight = getHeight(this.avatarPicture)
@@ -44,9 +47,12 @@ class frame:
         o = getPixel(this.initialFrame, x, y)
         if(distance(REPLACE_COLOR, getColor(o)) < 10):
           setColor(o, getColor(getPixel(this.newAvatarPicture, x - 16, y - 224)))
-        
-    writePictureTo(this.initialFrame, CURRENT_DIRECTORY + "frame_initial.png")
-    show(this.initialFrame)
+    
+    #Write frame initial to disk, to be used later    
+    writePictureTo(this.initialFrame, FRAME_INITIAL)
+    this.repaintMainFrame()
+    #this.mainFrame = makePicture(FRAME_INITIAL)
+    show(this.mainFrame)
     
     
     this.mainFrame = ""   
@@ -63,36 +69,42 @@ class frame:
     return frame
   
   
-  def repaintMainFrame(this, frame): #Returns a deepcopy of initial frame
+  def repaintMainFrame(this): #Gets main frame, repaints it
+    this.mainFrame = makePicture(FRAME_INITIAL)
+    for x in range(0, getWidth(this.mainFrame)):
+      for y in range(0, 125):
+        o = getPixel(this.mainFrame, x, y)
+        if(distance(REPLACE_COLOR, getColor(o)) < 10):
+          setColor(o, this.skyColor)
     
+    repaint(this.mainFrame)
     
-  def paintStats(this, frame): #Should be called whenever sanity or health gets updated
+  def paintStats(this): #Should be called whenever sanity or health gets updated
     print("Repainting stats!")
     
-    #Paint stats TODO
-    return frame
+   
   
-  def timeOfDay(this, frame):
+  def timeOfDay(this):
     print("Painting the time of day!")
+    r = getRed(this.skyColor)
+    g = getGreen(this.skyColor)
+    b = getBlue(this.skyColor)
+    old_color = makeColor(r,g,b)
     if(timeOfDay == 7):
-      print("Sun down") 
-      #Paint a certain color over a subsection of the frame
-      #Check if intial frame color is pink and if so paint on new frame
+      print("Sun down")
+      this.skyColor = makeColor(227,168,87) 
     elif(timeOfDay == 5): 
       print("Passing the horizon")
+      this.skyColor = makeColor(255, 213, 156)
     elif(timeOfDay <= 3):
       print("Night")
+      this.skyColor = makeColor(38,38,38)
       showInformation("The sun has gone down, Dracula is on his way!")
-    this.timeOfDay = this.timeOfDay - 1 #When turn passes
-    return frame
-  
-  def removeTimeOfDay(this):
     this.timeOfDay = this.timeOfDay - 1
+    return frame
    
   def getTimeOfDay(this):
     return this.timeOfDay
-    
-  #When changes are done repaint in main game loop
 
 class inventory:
 
@@ -477,7 +489,8 @@ while True:
       break
     if(val == 1):
       turns -= 1
-      frame.removeTimeOfDay()
       player.removeSanity(SANITY_PER_TURN)
+      frame.timeOfDay()
+      frame.repaintMainFrame()
     else:
       continue
