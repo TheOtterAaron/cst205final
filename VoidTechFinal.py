@@ -3,8 +3,7 @@ import pickle
 #Constants
 MAX_HEALTH = 20
 MAX_SANITY = 20
-SANITY_PER_REST = 3
-SANITY_PER_TURN = 1
+SANITY_PER_TURN = 3
 TRAIT = ""
 WOODEN_STAKE = "WOODEN STAKE"
 SILVER_SICKLE = "SILVER SICKLE"
@@ -194,6 +193,9 @@ class player:
       showInformation("As you break down crying, you become concious and you are inside a holding cell. You hear a faint clicking noise and turn around. Dracula has bitten you...")
       global turns
       turns = 0
+      
+  def addSanity(this, sanity):
+    this.sanity += sanity
       #Do sanity condition
 ###### Game variables ######
 turns = 7
@@ -377,6 +379,7 @@ churchRoom.addAction(holyWaterAction)
 
 #Church room dracula
 def fightDraculaCallback():
+  player.addSanity(100)
   showInformation("Dracula flies toward you")
   if(player.getInventory().hasItem(WOODEN_STAKE)):
     global end
@@ -390,6 +393,22 @@ def fightDraculaCallback():
 fightAction = action("Fight Dracula")
 fightAction.setCallback(fightDraculaCallback)
 churchRoomDracula.addAction(fightAction)
+
+
+#Add resting to all rooms
+def restCallBack():
+  half = (MAX_SANITY - player.getSanity()) / 2
+  player.addSanity(half)
+  showInformation("You feel rested")
+  
+rest = action("Rest")
+rest.setCallback(restCallBack)
+outsideCastleRoom.addAction(rest)
+forestRoom.addAction(rest)
+townRoom.addAction(rest)
+bottomHillRoom.addAction(rest)
+topHillRoom.addAction(rest)
+churchRoom.addAction(rest)
 
 #BEFORE GAME
 #NAME = requestString("Before the game starts, we like to get to know a little about the person who is playing. So lets start off with your name")
