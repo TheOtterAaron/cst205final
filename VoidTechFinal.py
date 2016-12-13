@@ -17,6 +17,14 @@ class frame:
   def __init__(this): #Get resources in file path to create initial frame
     this.timeOfDay = 8
     this.skyColor = makeColor(255,173,160)
+    global CURRENT_DIRECTORY
+    global FRAME_FILE
+    global FRAME_INITIAL
+    print(CURRENT_DIRECTORY)
+    if(not(CURRENT_DIRECTORY.endswith("\\"))):
+      CURRENT_DIRECTORY += "\\"
+    FRAME_FILE = CURRENT_DIRECTORY + "frame.png"
+    FRAME_INITIAL = CURRENT_DIRECTORY + "frame_initial.png"
     this.initialFrame = makePicture(FRAME_FILE) #TODO
     this.mainFrame = ""
     this.night = False
@@ -257,15 +265,6 @@ class player:
   def addSanity(this, sanity):
     this.sanity += sanity
       #Do sanity condition
-###### Game variables ######
-turns = 8
-player = player()
-#Add player to first room
-player.setCurrentRoom(outsideCastleRoom)
-end = False
-frame = frame()
-#TODO Add "fake" room and add actions for different traits
-#Traits will effect later game
 
 ###### Global Actions ######
 #Actions to be added to all rooms besides the fake room
@@ -291,6 +290,14 @@ churchRoom.setDescription("The wind is blowing through the church, there is an o
 
 churchRoomDracula = room("Church")
 churchRoomDracula.setDescription("The doors of the church fly off, Dracula has appeared!")
+
+###### Game variables ######
+turns = 8
+player = player()
+#Add player to first room
+player.setCurrentRoom(outsideCastleRoom)
+end = False
+frame = frame()
 
 #Add actions for outside castle
 def moatCallBack():
