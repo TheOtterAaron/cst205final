@@ -7,4 +7,4 @@ Repo for CST 205 Final Project, contains all the code and resources made for the
 
 
 
-![frame_dimensions](frame_dimensions.png)
+![frame_preview](frame_preview.png)
